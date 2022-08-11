@@ -1,6 +1,12 @@
 # Compiled class file
 *.class
 
+# Idea
+.idea
+*.iml
+*.iws
+*.ipr
+
 # Log file
 *.log
 
@@ -10,7 +16,26 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# OS
+Thumbs.db
+.DS_Store
+
+# Gradle
+.gradle
+!gradle-wrapper.jar
+
+# Maven
+target
+
+# Build
+out
+build
+bin
+logs
+
+
 # Package Files #
+*.class
 *.jar
 *.war
 *.nar

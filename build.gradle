@@ -1,0 +1,97 @@
+buildscript {
+    ext {
+        springBootVersion = '2.3.5.RELEASE'
+        dependencyManagementVersion = '1.0.3.RELEASE'
+        kotlinVersion = '1.3.40'
+    }
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("io.spring.gradle:dependency-management-plugin:${dependencyManagementVersion}")
+        classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        classpath ("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'war'
+    id 'java'
+    id 'application'
+}
+
+defaultTasks 'war'
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'kotlin-spring'
+
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenCentral artifactUrls: [
+            'http://jasperreports.sourceforge.net/maven2',
+            'http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/'
+    ]
+}
+
+war {
+    // アプリケーションによってwarを変更する(コンテキストパス変更のため)
+    def environment = project.hasProperty('env') ? project.env : 'main1'
+    if (environment.endsWith('main1')) {
+        enabled = true
+        archiveName 'main1.war'
+    } else {
+        enabled = true
+        archiveName 'main2.war'
+    }
+}
+
+
+application {
+    // アプリケーションによって起動するメインクラスを変更する
+    def environment = project.hasProperty('env') ? project.env : 'main1'
+    if (environment.endsWith('main1')) {
+        mainClass = 'com.example.MultiMainApplication'
+        println "main1"
+    } else {
+        mainClass = 'com.example2.MultiMainApplication2'
+        println "main2"
+    }
+    println "Target mainClassName: $mainClassName"
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.codehaus.groovy:groovy-all:3.0.5'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    runtime('org.springframework.boot:spring-boot-devtools')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-aop')
+    compile('org.springframework.boot:spring-boot-starter-cache')
+    compile('org.springframework.boot:spring-boot-configuration-processor')
+
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    modules {
+        module('org.springframework.boot:spring-boot-starter-logging') {
+            replacedBy 'org.springframework.boot:spring-boot-starter-log4j2'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
